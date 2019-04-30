@@ -21,7 +21,9 @@ import java.net.URL;
 public class RssFeedActivity extends Activity {
 
     private static final String RSS_KEY = "RSS_KEY";
+
     private LinearLayout rssPlaceholder;
+
     private Thread rssLoadTask;
 
     @Override
@@ -32,6 +34,7 @@ public class RssFeedActivity extends Activity {
         rssPlaceholder = findViewById(R.id.rss_placeholder);
 
         rssLoadTask = createRssTask("http://feed.androidauthority.com");
+        // Запускаем параллельный поток
         rssLoadTask.start();
     }
 
@@ -50,17 +53,22 @@ public class RssFeedActivity extends Activity {
             @Override
             public void run() {
                 try {
+                    // Открываем соединение по урлу
                     URL url = new URL(urlLink);
                     inputStream = url.openConnection().getInputStream();
 
+                    // Получили Rss каналы из сети
                     final RssFeedModel rssFeedModel = parseFeed(inputStream);
 
+                    // Кладем в пакет
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(RSS_KEY, rssFeedModel);
 
+                    // Пакет передаем в Сообщение
                     Message message = new Message();
                     message.setData(bundle);
 
+                    // Отправляем Сообщение Handler'у главного потока
                     resultHandler.sendMessage(message);
 
                 } catch (IOException e) {
@@ -80,6 +88,7 @@ public class RssFeedActivity extends Activity {
         };
     }
 
+    // Добавляем фид на экран
     private void showRssFeed(String rss) {
         TextView rssText = (TextView) LayoutInflater
                 .from(RssFeedActivity.this)
@@ -90,6 +99,7 @@ public class RssFeedActivity extends Activity {
         rssPlaceholder.addView(rssText);
     }
 
+    // Парсим Rss каналы из потока данных
     private RssFeedModel parseFeed(InputStream inputStream)
             throws XmlPullParserException, IOException {
 
@@ -165,16 +175,21 @@ public class RssFeedActivity extends Activity {
         }
     }
 
+    // Handler создается в Главном потоке
     private Handler resultHandler = new Handler(Looper.myLooper()) {
 
         @Override
         public void handleMessage(Message message) {
+            // Получаем пакет из Сообщения
             Bundle bundle = message.getData();
 
+            // Из пакета получаем Rss каналы
             RssFeedModel rssFeedModel = (RssFeedModel) bundle.getSerializable(RSS_KEY);
 
+            // Показываем базовые данные канала
             showRssFeed(rssFeedModel.toString());
 
+            // Показываем каналы
             for (int i = 0; i < rssFeedModel.getItemsSize(); i++) {
                 showRssFeed(rssFeedModel.getItem(i).toString());
             }

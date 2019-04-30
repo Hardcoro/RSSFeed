@@ -66,11 +66,6 @@ class RssFeedModel implements Serializable {
 
     @Override
     public String toString() {
-        return "RssFeedModel{" +
-                "title='" + title + '\'' +
-                ", link='" + link + '\'' +
-                ", description='" + description + '\'' +
-                ", itemsSize=" + items.size() +
-                '}';
+        return "Новость" + '\n' + title + '\n' + "Ссылка" + '\n' + link + '\n' + "Описание" + '\n' + description;
     }
 }
