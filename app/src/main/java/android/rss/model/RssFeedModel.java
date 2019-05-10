@@ -1,10 +1,10 @@
-package android.rss;
+package android.rss.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-class RssFeedModel implements Serializable {
+public class RssFeedModel implements Serializable {
 
     private String title;
 
@@ -14,53 +14,53 @@ class RssFeedModel implements Serializable {
 
     private List<RssFeedModel> items;
 
-    RssFeedModel() {
+    public RssFeedModel() {
         title = null;
         link = null;
         description = null;
         items = new ArrayList<>();
     }
 
-    RssFeedModel(String title, String link, String description) {
+    public RssFeedModel(String title, String link, String description) {
         this.title = title;
         this.link = link;
         this.description = description;
         this.items = new ArrayList<>();
     }
 
-    String getTitle() {
+    public String getTitle() {
         return title;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    String getLink() {
+    public String getLink() {
         return link;
     }
 
-    void setLink(String link) {
+    public void setLink(String link) {
         this.link = link;
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    void addItem(RssFeedModel item) {
+    public void addItem(RssFeedModel item) {
         items.add(item);
     }
 
-    RssFeedModel getItem(int position) {
+    public RssFeedModel getItem(int position) {
         return items.get(position);
     }
 
-    int getItemsSize() {
+    public int getItemsSize() {
         return items.size();
     }
 
