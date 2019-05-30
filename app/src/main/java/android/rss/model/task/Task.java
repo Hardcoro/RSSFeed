@@ -1,4 +1,4 @@
-package android.rss.model;
+package android.rss.model.task;
 
 import android.os.Handler;
 

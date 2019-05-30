@@ -1,8 +1,9 @@
-package android.rss.model;
+package android.rss.model.task;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.rss.model.RssFeedModel;
 import android.util.Log;
 import android.util.Xml;
 

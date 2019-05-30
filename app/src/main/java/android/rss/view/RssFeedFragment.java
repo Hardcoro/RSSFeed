@@ -3,7 +3,8 @@ package android.rss.view;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.rss.R;
-import android.rss.model.LoadRssTask;
+import android.rss.model.task.CreateDBTask;
+import android.rss.model.task.LoadRssTask;
 import android.rss.presenter.RssFeedPresenter;
 import android.rss.presenter.RssFeedPresenterImpl;
 import android.support.annotation.NonNull;
@@ -16,10 +17,21 @@ import android.widget.TextView;
 
 public class RssFeedFragment extends Fragment implements RssFeedView {
 
+//    public static final String RSS_URL = "http://feed.androidauthority.com";
+    public static final String RSS_URL = "http://blog.aweber.com/feed";
+
     private LinearLayout rssLayout;
 
-    private RssFeedPresenter presenter = new RssFeedPresenterImpl(this,
-            new LoadRssTask("http://feed.androidauthority.com"));
+    private RssFeedPresenter presenter;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        presenter = new RssFeedPresenterImpl(this,
+                new LoadRssTask(RSS_URL),
+                new CreateDBTask(getActivity().getApplicationContext()));
+    }
 
     @Nullable
     @Override
