@@ -18,7 +18,7 @@ public class CreateDBTask implements Task {
     }
 
     @Override
-    public void start(Handler handler) {
+    public void start(Object data, Handler handler) {
         createDbTask = new Thread("createDbTask") {
 
             @Override

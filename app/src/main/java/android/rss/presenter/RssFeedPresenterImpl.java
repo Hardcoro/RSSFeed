@@ -13,26 +13,28 @@ public class RssFeedPresenterImpl implements RssFeedPresenter {
     private RssFeedView view;
 
     private Task loadRssTask;
-    private Task createDbTask;
+    private Task saveRssTask;
+    private Task readRssTask;
 
-    public RssFeedPresenterImpl(RssFeedView view, Task loadRssTask, Task createDbTask) {
+    public RssFeedPresenterImpl(RssFeedView view, Task loadRssTask, Task saveRssTask, Task readRssTask) {
         this.view = view;
         this.loadRssTask = loadRssTask;
-        this.createDbTask = createDbTask;
+        this.saveRssTask = saveRssTask;
+        this.readRssTask = readRssTask;
     }
 
     @Override
     public void startLoadRss() {
-        loadRssTask.start(resultHandler);
-
-        createDbTask.start(null);
+        loadRssTask.start(null, resultHandler);
     }
 
     @Override
     public void stopLoadRss() {
         loadRssTask.stop();
 
-        createDbTask.stop();
+        saveRssTask.stop();
+
+        readRssTask.stop();
     }
 
     // Handler создается в Главном потоке
@@ -46,7 +48,9 @@ public class RssFeedPresenterImpl implements RssFeedPresenter {
             // Из пакета получаем Rss каналы
             RssFeedModel rssFeedModel = (RssFeedModel) bundle.getSerializable(Task.DATA_KEY);
 
-            // TODO Сохранение модели данных в БД, через Gson (конвертинг в Json)
+            saveRssTask.start(rssFeedModel, null);
+
+            readRssTask.start(null, null);
 
             // Показываем базовые данные канала
             view.showRss(rssFeedModel.getTitle());

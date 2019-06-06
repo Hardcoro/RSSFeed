@@ -25,7 +25,7 @@ public class LoadRssTask implements Task {
     }
 
     @Override
-    public void start(final Handler handler) {
+    public void start(Object data, final Handler handler) {
         // Создаем параллельный поток
         rssLoadTask = new Thread("rssLoadTask") {
 
