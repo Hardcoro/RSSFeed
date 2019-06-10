@@ -4,17 +4,29 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.rss.model.RssFeedModel;
+import android.rss.model.RssFeed;
 import android.rss.model.task.Task;
 import android.rss.view.RssFeedView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RssFeedPresenterImpl implements RssFeedPresenter {
+
+    // SAMPLE 1: https://news.yahoo.com/rss/entertainment
+    // SAMPLE 2: http://feed.androidauthority.com
+    // SAMPLE 3: http://blog.aweber.com/feed
+    // SAMPLE 4: https://www.nasa.gov/rss/dyn/breaking_news.rss
+
+    private static final long SAVE_TASK_ERROR_CODE = -1;
 
     private RssFeedView view;
 
     private Task loadRssTask;
     private Task saveRssTask;
     private Task readRssTask;
+
+    private List<RssFeed> rssList = new ArrayList<>();
 
     public RssFeedPresenterImpl(RssFeedView view, Task loadRssTask, Task saveRssTask, Task readRssTask) {
         this.view = view;
@@ -24,12 +36,15 @@ public class RssFeedPresenterImpl implements RssFeedPresenter {
     }
 
     @Override
-    public void startLoadRss() {
-        loadRssTask.start(null, resultHandler);
+    public void onAttach() {
+        view.hideRssList();
+        view.showProgress();
+
+        readRssTask.start(null, readRssResult);
     }
 
     @Override
-    public void stopLoadRss() {
+    public void onDetach() {
         loadRssTask.stop();
 
         saveRssTask.stop();
@@ -37,27 +52,57 @@ public class RssFeedPresenterImpl implements RssFeedPresenter {
         readRssTask.stop();
     }
 
-    // Handler создается в Главном потоке
-    private Handler resultHandler = new Handler(Looper.myLooper()) {
+    @Override
+    public void addRss(String url) {
+        view.showProgress();
+
+        loadRssTask.start(url, loadRssResult);
+    }
+
+    @Override
+    public void deleteRss(RssFeed rss) {
+        rssList.remove(rss);
+
+        saveRssTask.start(rssList, saveRssResult);
+    }
+
+    private Handler loadRssResult = new Handler(Looper.myLooper()) {
 
         @Override
         public void handleMessage(Message message) {
-            // Получаем пакет из Сообщения
+            Bundle bundle = message.getData();
+            rssList.addAll(0, (ArrayList<RssFeed>) bundle.getSerializable(Task.DATA_KEY));
+
+            saveRssTask.start(rssList, saveRssResult);
+        }
+    };
+
+    private Handler saveRssResult = new Handler(Looper.myLooper()) {
+
+        @Override
+        public void handleMessage(Message message) {
             Bundle bundle = message.getData();
 
-            // Из пакета получаем Rss каналы
-            RssFeedModel rssFeedModel = (RssFeedModel) bundle.getSerializable(Task.DATA_KEY);
+            if (bundle.getLong(Task.DATA_KEY) != SAVE_TASK_ERROR_CODE) {
+                view.hideProgress();
+                view.showRssList();
+                view.updateRssList(rssList);
+            }
+        }
+    };
 
-            saveRssTask.start(rssFeedModel, null);
+    private Handler readRssResult = new Handler(Looper.myLooper()) {
 
-            readRssTask.start(null, null);
+        @Override
+        public void handleMessage(Message message) {
+            Bundle bundle = message.getData();
+            rssList.addAll(0, (ArrayList<RssFeed>) bundle.getSerializable(Task.DATA_KEY));
 
-            // Показываем базовые данные канала
-            view.showRss(rssFeedModel.getTitle());
+            view.hideProgress();
 
-            // Показываем каналы
-            for (int i = 0; i < rssFeedModel.getItemsSize(); i++) {
-                view.showRss(rssFeedModel.getItem(i).getTitle());
+            if (!rssList.isEmpty()) {
+                view.showRssList();
+                view.updateRssList(rssList);
             }
         }
     };

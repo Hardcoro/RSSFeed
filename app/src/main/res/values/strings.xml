@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RSSFeed</string>
+
+    <string name="rss_edit_hint">RSS URL</string>
+    <string name="add_button">add</string>
+
 </resources>

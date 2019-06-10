@@ -21,7 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_RSS_FEED + "(" + KEY_ID
-                + " integer primary key," + KEY_NAME + " text)");
+                + " integer primary key autoincrement," + KEY_NAME + " text)");
 
     }
 

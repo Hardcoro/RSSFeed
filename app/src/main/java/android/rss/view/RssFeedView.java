@@ -1,6 +1,19 @@
 package android.rss.view;
 
-public interface RssFeedView {
+import android.rss.model.RssFeed;
+import android.view.View;
 
-    void showRss(String rss);
+import java.util.List;
+
+public interface RssFeedView extends OnRssClickListener, OnDeleteRssClickListener, View.OnClickListener {
+
+    void showProgress();
+
+    void hideProgress();
+
+    void showRssList();
+
+    void hideRssList();
+
+    void updateRssList(List<RssFeed> rssList);
 }
